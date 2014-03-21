@@ -123,16 +123,16 @@ public class IHM extends JFrame {
 						if (s.getControleur().getElement() instanceof Item)
 						{
 							//construis un oval aux coordonnes cx,cy de taille 8 x 8
-							char[] o={'☆'};
+							char[] o={'O'};
 							g.drawChars(o,0,o.length, cx, cy);
 						}
 						else
 						{
-							char[] h={'▣'};
-							char[] m={'＄'};
-							char[] v={'➳'};
-							char[] n={'☺'};
-							char[] gu={'⚔'};
+							char[] h={'1'};
+							char[] m={'2'};
+							char[] v={'3'};
+							char[] n={'4'};
+							char[] gu={'5'};
 							if(s.getControleur().getElement() instanceof Hodor)
 								g.drawChars(h,0, h.length, cx, cy);
 							else if(s.getControleur().getElement() instanceof Marchand)
