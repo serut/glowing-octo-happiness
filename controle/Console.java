@@ -114,12 +114,18 @@ public class Console extends UnicastRemoteObject implements IConsole {
 					((IArene) serveur).ramasser(refRMI, refPlusProche);
 				}
 				else {
+					/**
+					 * Il a du code mort, car Hodor ne peut pas trouver les ennemies proche de sa position.
+					 * (cible.getControleur().getElement() instanceof Combattant) est toujours true car la condition est déjà au dessus
+					 * (!(this.getElement() instanceof Hodor)) ne peut pas être true, car il faudrait que Hodor trouve un ennemie avec 
+					 * distPlusProche = 1
+					 */
 					/*On verifie que l'element n'est pas de la classe Hodor pour pouvoir attaquer*/
-					if(cible.getControleur().getElement() instanceof Combattant &&
-					!(this.getElement() instanceof Hodor)) {
+					//if(cible.getControleur().getElement() instanceof Combattant &&
+					//!(this.getElement() instanceof Hodor)) {
 						parler("Je combat "+refPlusProche);
 						((IArene) serveur).interaction(refRMI, refPlusProche);
-					}
+					//}
 				}
 			}
 			//sinon
@@ -140,55 +146,61 @@ public class Console extends UnicastRemoteObject implements IConsole {
 	 * @param ref la reference de l'element cible
 	 */
 	public void seDirigerVers(int ref) {
-		Point pvers;
-		
-		//si la cible est l'element meme, il reste sur place
-		if (ref==ve.getRef()) return;
+		try{
+			Point pvers;
+			
+			//si la cible est l'element meme, il reste sur place
+			if (ref==ve.getRef()) return;
 
-		//s'il n'y a pas de reference la plus proche
-		if (ref==0) {
-			//si le point ou l'element se trouve est le point d'errance precedemment defini
-			if ((pointErrance!=null) && (pointErrance.equals(ve.getPoint()))) { 
-				//le point d'errance est reinitialise
-				pointErrance=null;
+			//s'il n'y a pas de reference la plus proche
+			if (ref==0) {
+				//si le point ou l'element se trouve est le point d'errance precedemment defini
+				if ((pointErrance!=null) && (pointErrance.equals(ve.getPoint()))) { 
+					//le point d'errance est reinitialise
+					pointErrance=null;
+				}
+				if (pointErrance==null) {
+					//initialisation aleatoire
+					Random r=new Random();
+					pointErrance=new Point(r.nextInt(100), r.nextInt(100));
+				}
+				//la cible devient le nouveau point d'errance
+				pvers=pointErrance;
+			} 
+			//sinon la cible devient le point sur lequel se trouve l'element le plus proche
+			else {
+				pvers=voisins.get(ref).getPoint();
 			}
-			if (pointErrance==null) {
-				//initialisation aleatoire
-				Random r=new Random();
-				pointErrance=new Point(r.nextInt(100), r.nextInt(100));
+			
+			//si l'element n'existe plus (cas posible: deconnexion du serveur), le point reste sur place
+			if (pvers==null) return;
+			
+			//calcule la direction pour atteindre la ref (+1/-1 par rapport a la position courante)
+			int dx=(int) (pvers.getX()-ve.getPoint().x);
+			if (dx!=0)	
+				dx=dx/Math.abs(dx);
+			int dy=(int) (pvers.getY()-ve.getPoint().y);
+			if (dy!=0)  
+				dy=dy/Math.abs(dy);
+			
+			//instancie le point destination
+			Point dest = new Point(ve.getPoint().x+dx,ve.getPoint().y+dy);
+			
+			//si le point destination est libre
+			if (UtilitaireConsole.caseVide(dest,voisins)) {		
+				//l'element courant se deplace
+				ve.setPoint(dest);
+			} 
+			else {
+				//cherche la case libre la plus proche dans la direction de la cible
+				Point top = UtilitaireConsole.meilleurPoint(ve.getPoint(),dest,voisins);
+				//deplace l'element courant sur celle-la
+				ve.setPoint(top);
 			}
-			//la cible devient le nouveau point d'errance
-			pvers=pointErrance;
-		} 
-		//sinon la cible devient le point sur lequel se trouve l'element le plus proche
-		else {
-			pvers=voisins.get(ref).getPoint();
 		}
-		
-		//si l'element n'existe plus (cas posible: deconnexion du serveur), le point reste sur place
-		if (pvers==null) return;
-		
-		//calcule la direction pour atteindre la ref (+1/-1 par rapport a la position courante)
-		int dx=(int) (pvers.getX()-ve.getPoint().x);
-		if (dx!=0)	
-			dx=dx/Math.abs(dx);
-		int dy=(int) (pvers.getY()-ve.getPoint().y);
-		if (dy!=0)  
-			dy=dy/Math.abs(dy);
-		
-		//instancie le point destination
-		Point dest = new Point(ve.getPoint().x+dx,ve.getPoint().y+dy);
-		
-		//si le point destination est libre
-		if (UtilitaireConsole.caseVide(dest,voisins)) {		
-			//l'element courant se deplace
-			ve.setPoint(dest);
-		} 
-		else {
-			//cherche la case libre la plus proche dans la direction de la cible
-			Point top = UtilitaireConsole.meilleurPoint(ve.getPoint(),dest,voisins);
-			//deplace l'element courant sur celle-la
-			ve.setPoint(top);
+		catch(Exception e){
+			e.printStackTrace();
+			System.out.println("FAIL");
 		}
 	}
 
@@ -277,6 +289,13 @@ public class Console extends UnicastRemoteObject implements IConsole {
 	 */
 	public void ajouterConnu(int ref) throws RemoteException {
 		elem.ajouterConnu(ref);
+	}
+	
+	public VueElement getVoisin(int ref){
+		return voisins.get(ref);
+	}
+	public void setPointErrance(Point p){
+		this.pointErrance = p;
 	}
 		
 }
