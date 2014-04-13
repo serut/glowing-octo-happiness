@@ -1,22 +1,18 @@
 package controle;
 
-import static org.junit.Assert.*;
 import individu.Combattant;
 import individu.Item;
 import individu.classe.Guerrier;
 import individu.classe.Hodor;
 import individu.classe.Marchand;
 
-import java.rmi.RemoteException;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
-public class ConsoleTestIntegration extends TestCase {
+public class ConsoleTestValidation extends TestCase {
 	/**
 	 * Modification du code du projet pour que les tests fonctionnent :
 	 * - ajout sur Console.seDirigerVers() d'un try catch
@@ -40,19 +36,27 @@ public class ConsoleTestIntegration extends TestCase {
 		int r2 = 50;
 		try {
 			Combattant guerrier = new Guerrier("Guerrier");
-			joueur1 = new Console(guerrier, r1-12, r2);
+			joueur1 = new Console(guerrier, r1, r2);
 			refJoueur1 = joueur1.getVueElement().getRef();
 			
 			
 			Combattant hodor = new Hodor("Guerrier");
-			joueur2 = new Console(hodor, r1-11, r2);
+			joueur2 = new Console(hodor, r1+1, r2);
 			refJoueur2 = joueur2.getVueElement().getRef();
 			
 
 			Combattant marchand = new Marchand("Guerrier");
-			joueur3 = new Console(marchand, r1+8, r2);
+			joueur3 = new Console(marchand, r1+5, r2);
 			refJoueur3 = joueur3.getVueElement().getRef();
 			
+			
+			Combattant guerrier2 = new Guerrier("Guerrier");
+			joueur4 = new Console(guerrier2, r1+4, r2+1);
+			refJoueur4 = joueur4.getVueElement().getRef();
+			
+			Combattant guerrierSeul = new Guerrier("Guerrier");
+			joueur5 = new Console(guerrierSeul, r1+15, r2+10);
+			refJoueur5 = joueur5.getVueElement().getRef();
 			
 			
 			int r3 = new Random().nextInt(100);
@@ -61,37 +65,35 @@ public class ConsoleTestIntegration extends TestCase {
 			int r6 = new Random().nextInt(100);
 			int r7 = new Random().nextInt(10)-5;
 			Item pomme = new Item("× A:"+r3+" B:"+r4+" E:"+r5+" V:"+r6+" S:"+r7, r3, r4, r5, r6, r7);
-			objet = new Console(pomme, r1+7, r2);
+			objet = new Console(pomme, r1+6, r2);
 			refObjet = objet.getVueElement().getRef();
 		} catch (Exception e) {
 			fail();
 		} 
 	}
+	@Test
+	public void test2RunRammasserObjet() {
+		try {
+			joueur3.run();
+		} catch (Exception e) {
+			fail();
+		}
+	}
+	@Test
+	public void test4RunCombat() {
+		try {
+			joueur1.run(); // Il ramasse l'objet
+		} catch (Exception e) {
+			fail();
+		}
+	}
+	@Test
+	public void test5RunErrer() {
+		try {
+			joueur5.run(); // Il ramasse l'objet
+		} catch (Exception e) {
+			fail();
+		}
+	}
 
-	@Test
-	public void test1RunObjet() {
-		try {
-			joueur3.run();
-			joueur3.run();
-			joueur3.run();
-			joueur3.run();
-			System.out.println(objet.toString());
-		} catch (RemoteException e) {
-			fail();
-		}
-		
-	}
-	@Test
-	public void test2RunObjet() {
-		try {
-			joueur2.run();
-			joueur2.run();
-			joueur1.run();
-			joueur1.run();
-			System.out.println(objet.toString());
-		} catch (RemoteException e) {
-			fail();
-		}
-		
-	}
 }

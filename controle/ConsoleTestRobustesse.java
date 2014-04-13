@@ -9,14 +9,12 @@ import individu.classe.Marchand;
 
 import java.rmi.RemoteException;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
-public class ConsoleTestIntegration extends TestCase {
+public class ConsoleTestRobustesse extends TestCase {
 	/**
 	 * Modification du code du projet pour que les tests fonctionnent :
 	 * - ajout sur Console.seDirigerVers() d'un try catch
@@ -69,29 +67,21 @@ public class ConsoleTestIntegration extends TestCase {
 	}
 
 	@Test
-	public void test1RunObjet() {
+	public void test1seDirigerVersRefNonDefinie() {
 		try {
-			joueur3.run();
-			joueur3.run();
-			joueur3.run();
-			joueur3.run();
-			System.out.println(objet.toString());
-		} catch (RemoteException e) {
+			joueur1.seDirigerVers(150);
+		} catch (Exception e) {
 			fail();
 		}
-		
 	}
+	
+
 	@Test
-	public void test2RunObjet() {
+	public void test2RamasserJoueur() {
 		try {
-			joueur2.run();
-			joueur2.run();
-			joueur1.run();
-			joueur1.run();
-			System.out.println(objet.toString());
-		} catch (RemoteException e) {
+			joueur1.ramasserObjet(joueur2);
 			fail();
+		} catch (Exception e) {
 		}
-		
 	}
 }
